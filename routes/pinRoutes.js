@@ -1,0 +1,21 @@
+import express from "express";
+import { commentOnPin, createPin, deleteComment, deletePin, getAllPins, getCurrentUserPins, getLikedPins, getSavedPins, getSinglePin, getSuggestionPins, likeUnlikePin, saveUnsavedPins, updateComment, updatePin } from "../controllers/pinControllers.js";
+import { isAuth } from "../middlewares/isAuth.js";
+import uploadFile from "../middlewares/multer.js";
+
+const router = express.Router();
+router.post("/new", isAuth, uploadFile, createPin);
+router.get("/all", isAuth, getAllPins);
+router.get("/likes", isAuth, getLikedPins);
+router.get("/saved", isAuth, getSavedPins);
+router.get("/:id", isAuth, getSinglePin);
+router.get("/suggestions/:id", isAuth, getSuggestionPins);
+router.put("/:id", isAuth, uploadFile, updatePin);
+router.delete("/:id", isAuth, deletePin);
+router.post("/comment/:id", isAuth, commentOnPin);
+router.put("/comment/:id", isAuth, updateComment);
+router.delete("/comment/:id", isAuth, deleteComment);
+router.get("/loggedinuser/:id", isAuth, getCurrentUserPins);
+router.post("/like/:id", isAuth, likeUnlikePin);
+router.post("/save/:id", isAuth, saveUnsavedPins);
+export default router;
