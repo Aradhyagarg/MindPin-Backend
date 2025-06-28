@@ -22,5 +22,4 @@ router.post("/reset-password", resetPassword);
 router.put("/edit-profile", isAuth, uploadFile, editProfile);
 router.put("/account", isAuth, updateAccount);
 
-
 export default router

@@ -395,7 +395,14 @@ export const getSuggestionPins = TryCatch(async (req, res) => {
     return res.status(200).json([]);
   }
 
-  const regexPattern = keywords.map((keyword) => `\\b${keyword}\\b`).join("|");
+  //const regexPattern = keywords.map((keyword) => `\\b${keyword}\\b`).join("|");
+  //const regexPattern = keywords.join("|");
+  //const regexPattern = keywords.map(k => escapeRegExp(k)).join("|");
+  //const regexPattern = keywords.map(keyword => `\\b${escapeRegExp(keyword)}\\b`).join("|");
+  const regexPattern = keywords.map(keyword => {
+    const escaped = escapeRegExp(keyword);
+    return `\\b${escaped}s?\\b|\\b${escaped.replace(/s$/, '')}\\b`;
+  }).join("|");
   console.log(`🔧 Regex pattern: ${regexPattern}`);
 
   const suggestedPins = await Pin.find({
