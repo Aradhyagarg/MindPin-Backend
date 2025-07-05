@@ -536,6 +536,17 @@ export const getFollowings = TryCatch(async (req, res) => {
   });
 });
 
+export const getUnreadNotifications = TryCatch(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+  res.status(200).json({
+    unreadNotifications: user.unreadNotifications || 0,
+    message: "Unread notifications retrieved successfully",
+  });
+}) 
+
 export const logOutUser = TryCatch(async (req, res) => {
   res.cookie("token", "", {
     expires: new Date(0),

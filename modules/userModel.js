@@ -56,6 +56,10 @@ const schema = new mongoose.Schema(
     deactivationDate: {
       type: Date,
     },
+    unreadNotifications: { 
+      type: Number, 
+      default: 0 
+    },
     profileViews: [
       {
         visitorId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

@@ -1,6 +1,6 @@
 import express from "express";
 import { searchContent } from "../controllers/searchController.js";
-import { followAndUnfollowUser, loginUser, logOutUser, myProfile, registerUser, userProfile, forgotPassword, resetPassword, editProfile, updateAccount, getFollowers, getFollowings, getMonthlyProfileViews } from "../controllers/userControllers.js";
+import { followAndUnfollowUser, loginUser, logOutUser, myProfile, registerUser, userProfile, forgotPassword, resetPassword, editProfile, updateAccount, getFollowers, getFollowings, getMonthlyProfileViews, getUnreadNotifications } from "../controllers/userControllers.js";
 import { isAuth } from "../middlewares/isAuth.js";
 import uploadFile from "../middlewares/multer.js";
 
@@ -12,6 +12,7 @@ router.get("/logout", isAuth, logOutUser);
 router.get("/me", isAuth, myProfile);
 router.get("/followers/:id", isAuth, getFollowers);
 router.get("/followings/:id", isAuth, getFollowings);
+router.get("/unread-notifications", isAuth, getUnreadNotifications);
 /*router.get("/user/:username/views", isAuth, getMonthlyProfileViews);
 router.get("/:username", isAuth, userProfile);*/
 router.get("/:username", isAuth, userProfile);

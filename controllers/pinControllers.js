@@ -3,6 +3,7 @@ import cloudinary from "cloudinary";
 import { Pin } from "../modules/pinModel.js";
 import TryCatch from "../utils/TryCatch.js";
 import { redisClient } from "../database/redis.js";
+import { User } from "../modules/userModel.js";
 
 export const createPin = async (req, res) => {
   const { title, pin } = req.body;
@@ -155,6 +156,11 @@ export const commentOnPin = TryCatch(async (req, res) => {
     comment: req.body.comment,
   });
   await pin.save();
+  const pinOwner = await User.findById(pin.owner);
+  if(pinOwner && pinOwner._id.toString() !== req.user._id.toString()){
+    pinOwner.unreadNotifications = (pinOwner.unreadNotifications || 0) + 1;
+    await pinOwner.save();
+  }
   res.json({ message: "Comment added successfully" });
 });
 
