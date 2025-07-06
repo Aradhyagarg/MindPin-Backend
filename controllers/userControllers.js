@@ -536,6 +536,48 @@ export const getFollowings = TryCatch(async (req, res) => {
   });
 });
 
+export const getNotifications = TryCatch(async (req, res) => {
+  const user = await User.findById(req.user._id).populate({
+    path: "notifications.userId",
+    select: "name username profilePhoto",
+    match: { isDeactivated: false },
+  }).populate({
+    path: "notifications.pinId",
+    select: "title image",
+  });
+
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const unreadNotificationData = user.notifications
+    .filter((notification) => !notification.isRead && notification.userId && notification.pinId)
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  res.status(200).json({
+    notifications: unreadNotificationData,
+    message: "Notifications retrieved successfully",
+  });
+});
+
+// userController.js
+/*export const markNotificationsRead = TryCatch(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  user.notifications = user.notifications.map((notification) => ({
+    ...notification.toObject(),
+    isRead: true,
+  }));
+  await user.save();
+
+  res.status(200).json({
+    message: "Notifications marked as read",
+  });
+});*/
+
 export const getUnreadNotifications = TryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (!user) {

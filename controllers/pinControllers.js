@@ -150,6 +150,11 @@ export const commentOnPin = TryCatch(async (req, res) => {
   if (!pin) {
     return res.status(404).json({ message: "Pin not found" });
   }
+
+  const commenter = await User.findById(req.user._id);
+  if (!commenter) {
+    return res.status(404).json({ message: "Commenter not found" });
+  }
   pin.comments.push({
     user: req.user._id,
     name: req.user.name,
@@ -158,6 +163,12 @@ export const commentOnPin = TryCatch(async (req, res) => {
   await pin.save();
   const pinOwner = await User.findById(pin.owner);
   if(pinOwner && pinOwner._id.toString() !== req.user._id.toString()){
+    pinOwner.notifications.push({
+      type: "comment",
+      userId: req.user._id,
+      pinId: pin._id,
+      message: `${commenter.name} commented on your pin: "${req.body.comment}"`,
+    });
     pinOwner.unreadNotifications = (pinOwner.unreadNotifications || 0) + 1;
     await pinOwner.save();
   }
