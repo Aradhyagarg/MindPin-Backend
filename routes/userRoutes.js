@@ -1,6 +1,6 @@
 import express from "express";
 import { searchContent } from "../controllers/searchController.js";
-import { followAndUnfollowUser, loginUser, logOutUser, myProfile, registerUser, userProfile, forgotPassword, resetPassword, editProfile, updateAccount, getFollowers, getFollowings, getMonthlyProfileViews, getUnreadNotifications, getNotifications } from "../controllers/userControllers.js";
+import { followAndUnfollowUser, loginUser, logOutUser, myProfile, registerUser, userProfile, forgotPassword, resetPassword, editProfile, updateAccount, getFollowers, getFollowings, getMonthlyProfileViews, getUnreadNotifications, getNotifications, markNotificationsRead } from "../controllers/userControllers.js";
 import { isAuth } from "../middlewares/isAuth.js";
 import uploadFile from "../middlewares/multer.js";
 
@@ -24,5 +24,6 @@ router.post("/forgot-password", forgotPassword);
 router.post("/reset-password", resetPassword);
 router.put("/edit-profile", isAuth, uploadFile, editProfile);
 router.put("/account", isAuth, updateAccount);
+router.put("/notifications/:id/read", isAuth, markNotificationsRead);
 
 export default router

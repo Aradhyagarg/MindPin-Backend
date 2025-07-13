@@ -560,6 +560,33 @@ export const getNotifications = TryCatch(async (req, res) => {
   });
 });
 
+export const markNotificationsRead = TryCatch(async (req, res) => {
+  const user = await User.findById(req.user._id);
+  if (!user) {
+    return res.status(404).json({ message: "User not found" });
+  }
+
+  const notificationId = req.params.id;
+  const notification = user.notifications.find(
+    (n) => n._id.toString() === notificationId
+  );
+
+  if (!notification) {
+    return res.status(404).json({ message: "Notification not found" });
+  }
+
+  if (!notification.isRead) {
+    notification.isRead = true;
+    user.unreadNotifications = Math.max(0, (user.unreadNotifications || 0) - 1);
+    await user.save();
+  }
+
+  res.status(200).json({
+    message: "Notification marked as read",
+    unreadNotifications: user.unreadNotifications,
+  });
+})
+
 // userController.js
 /*export const markNotificationsRead = TryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
