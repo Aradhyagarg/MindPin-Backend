@@ -555,6 +555,7 @@ export const getNotifications = TryCatch(async (req, res) => {
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
   res.status(200).json({
+    unreadNotifications: user.unreadNotifications,
     notifications: unreadNotificationData,
     message: "Notifications retrieved successfully",
   });
@@ -605,7 +606,7 @@ export const markNotificationsRead = TryCatch(async (req, res) => {
   });
 });*/
 
-export const getUnreadNotifications = TryCatch(async (req, res) => {
+/*export const getUnreadNotifications = TryCatch(async (req, res) => {
   const user = await User.findById(req.user._id);
   if (!user) {
     return res.status(404).json({ message: "User not found" });
@@ -614,7 +615,7 @@ export const getUnreadNotifications = TryCatch(async (req, res) => {
     unreadNotifications: user.unreadNotifications || 0,
     message: "Unread notifications retrieved successfully",
   });
-}) 
+}) */
 
 export const logOutUser = TryCatch(async (req, res) => {
   res.cookie("token", "", {
