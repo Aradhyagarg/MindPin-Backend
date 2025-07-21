@@ -20,17 +20,19 @@ export const createPin = async (req, res) => {
     owner: req.user._id,
   });
 
-  const cacheKey = "all_pins";
+  /*const cacheKey = "all_pins";
   const cachedPins = await redisClient.get(cacheKey);
   let pins;
   if (cachedPins) {
     pins = JSON.parse(cachedPins);
   } else {
     pins = await Pin.find().sort({ createdAt: -1 });
-  }
+  }*/
+
+  let pins = await Pin.find().sort({ createdAt: -1 });
   pins.unshift(newPin);
-  const newData = await redisClient.setEx(cacheKey, 600, JSON.stringify(pins));
-  console.log(newData);
+  /*const newData = await redisClient.setEx(cacheKey, 600, JSON.stringify(pins));
+  console.log(newData);*/
 
   res.json({
     message: "Pin created successfully",
@@ -68,15 +70,102 @@ export const createPin = async (req, res) => {
   //res.json(pins);
 });*/
 
-export const getAllPins = TryCatch(async (req, res) => {
-  /*const pins = await Pin.find().sort({ createdAt: -1 });
+/*export const getAllPins = TryCatch(async (req, res) => {
+  const cacheKey = "all_pins";
+  const lockKey = "all_pins:lock";
 
-  const filterPins = pins.filter(pin => !pin.owner.isDeactivated);*/
+  // Try to get pins from Redis cache
+  const cachedPins = await redisClient.get(cacheKey);
+  if (cachedPins) {
+    return res.json(JSON.parse(cachedPins));
+  }
+
+  // Acquire lock to prevent cache stampede
+  const lockAcquired = await redisClient.setNX(lockKey, "1");
+  if (lockAcquired) {
+    await redisClient.expire(lockKey, 10); // Set lock to expire in 10 seconds
+    try {
+      // Fetch pins and populate owner
+      const pins = await Pin.find()
+        .populate({
+          path: "owner",
+          select: "-password",
+          match: { isDeactivated: { $ne: true } }, // Filter deactivated users in query
+        })
+        .sort({ createdAt: -1 });
+
+      // Filter out null owners (from deactivated users) and apply visibility rules
+      const finalPins = pins
+        .filter((pin) => pin.owner) // Remove pins with no owner (due to match)
+        .filter((pin) => {
+          if (pin.owner.profileVisibility === "public") return true;
+          if (
+            pin.owner.profileVisibility === "private" &&
+            pin.owner._id.toString() === req.user._id.toString()
+          )
+            return true;
+          if (
+            pin.owner.profileVisibility === "private" &&
+            pin.owner.followers.includes(req.user._id)
+          )
+            return true;
+          return false;
+        });
+
+      // Cache the filtered pins
+      await redisClient.setEx(cacheKey, 600, JSON.stringify(finalPins));
+      await redisClient.del(lockKey); // Release lock
+      return res.json(finalPins);
+    } catch (error) {
+      await redisClient.del(lockKey); // Release lock on error
+      throw error;
+    }
+  } else {
+    // Retry after a short delay if lock is not acquired
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    const retryPins = await redisClient.get(cacheKey);
+    if (retryPins) {
+      return res.json(JSON.parse(retryPins));
+    }
+    // Fallback to database if cache is still empty
+    const pins = await Pin.find()
+      .populate({
+        path: "owner",
+        select: "-password",
+        match: { isDeactivated: { $ne: true } },
+      })
+      .sort({ createdAt: -1 });
+
+    const finalPins = pins
+      .filter((pin) => pin.owner)
+      .filter((pin) => {
+        if (pin.owner.profileVisibility === "public") return true;
+        if (
+          pin.owner.profileVisibility === "private" &&
+          pin.owner._id.toString() === req.user._id.toString()
+        )
+          return true;
+        if (
+          pin.owner.profileVisibility === "private" &&
+          pin.owner.followers.includes(req.user._id)
+        )
+          return true;
+        return false;
+      });
+
+    return res.json(finalPins);
+  }
+});*/
+
+export const getAllPins = TryCatch(async (req, res) => {
+  //const pins = await Pin.find().sort({ createdAt: -1 });
+
+  //const filterPins = pins.filter(pin => !pin.owner.isDeactivated);
 
   // Then filter out pins from deactivated users
-  /*const filteredPins = pins.filter(pin => 
-    pin.owner && !pin.owner.isDeactivated
-  );*/
+  //const filteredPins = pins.filter(pin => 
+    //pin.owner && !pin.owner.isDeactivated
+  //);
 
   //res.json(filterPins);
 

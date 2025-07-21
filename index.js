@@ -1,12 +1,13 @@
 import express from "express";
 import dotenv from "dotenv";
-import userRouters from "./routes/userRoutes.js"
-import pinRouters from "./routes/pinRoutes.js"
+import userRouters from "./routes/userRoutes.js";
+import pinRouters from "./routes/pinRoutes.js";
 //import authRouters from "./routes/authRoutes.js";
 //import passport from "./config/passport.js"; // Updated path
 import { connectDB } from "./database/db.js";
-import cookieParser from "cookie-parser"
-import cloudinary from "cloudinary"
+import cookieParser from "cookie-parser";
+import cloudinary from "cloudinary";
+import cors from "cors";
 import { redisClient, connectRedis } from './database/redis.js';
 
 dotenv.config();
@@ -16,6 +17,10 @@ cloudinary.v2.config({
     api_secret: process.env.CLOUD_SECRET,
 })
 const app = express();
+app.use(cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
