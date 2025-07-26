@@ -18,7 +18,7 @@ cloudinary.v2.config({
 })
 const app = express();
 app.use(cors({
-    origin: "https://mind-pin-frontend.vercel.app/",
+    origin: "https://mind-pin-frontend.vercel.app",
     credentials: true,
 }));
 app.use(express.json());
