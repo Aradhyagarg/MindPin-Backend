@@ -297,7 +297,8 @@ export const updateAccount = TryCatch(async (req, res) => {
     res.cookie("token", "", {
       expires: new Date(0),
       httpOnly: true,
-      sameSite: "strict",
+      secure: true,
+      sameSite: "none",
     });
 
     /*try {
@@ -347,7 +348,8 @@ export const updateAccount = TryCatch(async (req, res) => {
       res.cookie("token", "", {
         expires: new Date(0),
         httpOnly: true,
-        sameSite: "strict",
+        secure: true,
+        sameSite: "none",
       });
 
       try {
@@ -621,7 +623,8 @@ export const logOutUser = TryCatch(async (req, res) => {
   res.cookie("token", "", {
     expires: new Date(0),
     httpOnly: true,
-    sameSite: "strict",
+    secure: true,
+    sameSite: "none",
   });
 
   res.status(200).json({
